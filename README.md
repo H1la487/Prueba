@@ -1,5 +1,3 @@
-# Prueba
-Prueba diagnóstica de fránces
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,182 +7,162 @@ Prueba diagnóstica de fránces
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .quiz-option {
-            transition: all 0.2s ease-in-out;
-        }
-        .quiz-option:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .correct {
-            background-color: #22c55e !important; /* green-500 */
-            color: white;
-            border-color: #16a34a;
-        }
-        .incorrect {
-            background-color: #ef4444 !important; /* red-500 */
-            color: white;
-            border-color: #dc2626;
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .quiz-option { transition: all 0.2s ease-in-out; }
+        .quiz-option:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .correct { background-color: #22c55e !important; color: white; border-color: #16a34a; }
+        .incorrect { background-color: #ef4444 !important; color: white; border-color: #dc2626; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #4f46e5; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
 
-    <div id="quiz-container" class="bg-white p-6 md:p-8 rounded-2xl shadow-xl w-full max-w-2xl mx-auto">
+    <div id="container" class="bg-white p-6 md:p-8 rounded-2xl shadow-xl w-full max-w-2xl mx-auto">
         
-        <!-- Header -->
-        <div class="mb-6 text-center">
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Prueba Diagnóstica de Francés</h1>
-            <p class="text-gray-500 mt-1">Selecciona la respuesta correcta.</p>
-        </div>
-        
-        <!-- Progress and Question -->
-        <div id="question-area">
-            <div class="flex justify-between items-center mb-4">
-                <p id="question-counter" class="text-sm font-semibold text-gray-600"></p>
-                <p id="score-counter" class="text-sm font-semibold text-indigo-600"></p>
+        <!-- Name Input Screen -->
+        <div id="name-container">
+            <div class="text-center">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Prueba Diagnóstica de Francés</h1>
+                <p class="text-gray-500 mt-2 mb-6">Por favor, escribe tu nombre para comenzar.</p>
+                <form id="name-form">
+                    <input type="text" id="student-name" placeholder="Nombre y Apellido" class="w-full p-3 border-2 border-gray-300 rounded-lg mb-4 focus:border-indigo-500 focus:ring-indigo-500" required>
+                    <button type="submit" class="bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition-colors w-full">
+                        Comenzar Prueba
+                    </button>
+                </form>
             </div>
-            <p id="question-text" class="text-lg font-semibold text-gray-700 mb-6 min-h-[60px]"></p>
         </div>
 
-        <!-- Answer Options -->
-        <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Options will be dynamically inserted here -->
+        <!-- Quiz Screen -->
+        <div id="quiz-container" class="hidden">
+            <div class="mb-6 text-center">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Prueba Diagnóstica de Francés</h1>
+            </div>
+            <div id="question-area">
+                <div class="flex justify-between items-center mb-4">
+                    <p id="question-counter" class="text-sm font-semibold text-gray-600"></p>
+                    <p id="score-counter" class="text-sm font-semibold text-indigo-600"></p>
+                </div>
+                <p id="question-text" class="text-lg font-semibold text-gray-700 mb-6 min-h-[60px]"></p>
+            </div>
+            <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         </div>
 
         <!-- Results Screen -->
         <div id="results-container" class="hidden text-center">
-             <h2 class="text-2xl font-bold text-gray-800 mb-4">¡Prueba completada!</h2>
-             <p id="results-text" class="text-xl text-gray-600 mb-2"></p>
-             <p id="results-feedback" class="text-indigo-600 font-semibold mb-6"></p>
-             <button id="restart-button" class="bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition-colors w-full mb-3">
-                 Volver a intentar
-             </button>
-             <button id="share-button" class="bg-green-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-600 transition-colors w-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                 Compartir resultado en WhatsApp
+             <div id="submission-feedback">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">¡Prueba completada!</h2>
+                <p id="results-text" class="text-xl text-gray-600 mb-2"></p>
+                <p id="results-feedback" class="text-indigo-600 font-semibold mb-6"></p>
+             </div>
+             <div id="loader-container" class="hidden flex flex-col items-center justify-center">
+                <div class="loader mb-4"></div>
+                <p class="text-gray-600 font-semibold">Enviando tus resultados...</p>
+             </div>
+             <button id="restart-button" class="bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition-colors w-full mt-4">
+                 Realizar de nuevo
              </button>
         </div>
     </div>
 
     <script>
+        // --- PEGA AQUÍ LA URL DE TU APLICACIÓN WEB DE GOOGLE APPS SCRIPT ---
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwGG3kUWXFweoVeJbJFMSpQ4n2NBfXGW_PQf3NWvHHU0sBtnhA5CiDXLevpXTXKiTR7/exec'; 
+        // --------------------------------------------------------------------
+
         const quizData = [
-            {
+             {
                 question: "En la papelería, compras un cuaderno y un estuche. El estuche es de un color muy bonito. ¿Cómo describirías el estuche usando el adjetivo 'beau' correctamente?",
-                options: [
-                    { text: "C'est un beau estuche.", correct: false },
-                    { text: "C'est une belle trousse.", correct: true },
-                    { text: "C'est un bel trousse.", correct: false },
-                    { text: "C'est une beau trousse.", correct: false }
-                ]
+                options: ["C'est un beau estuche.", "C'est une belle trousse.", "C'est un bel trousse.", "C'est une beau trousse."],
+                answer: "C'est une belle trousse."
             },
             {
                 question: "Tu amigo te cuenta: 'A mi hermano le encantan las zapatillas grandes, los pantalones anchos y a veces usa una gorra'. ¿Qué estilo de ropa tiene su hermano?",
-                options: [
-                    { text: "Style hippie chic", correct: false },
-                    { text: "Style hipster", correct: false },
-                    { text: "Style skateur", correct: true },
-                    { text: "Style BCBG", correct: false }
-                ]
+                options: ["Style hippie chic", "Style hipster", "Style skateur", "Style BCBG"],
+                answer: "Style skateur"
             },
             {
                 question: "Si Pau Gasol es 'un sportif espagnol', ¿cómo nos referiríamos a Penélope Cruz, que es de la misma nacionalidad y también es una celebridad?",
-                options: [
-                    { text: "C'est une actrice espagnol.", correct: false },
-                    { text: "C'est un acteur espagnole.", correct: false },
-                    { text: "C'est une actrice espagnole.", correct: true },
-                    { text: "C'est un actrice espagnol.", correct: false }
-                ]
+                options: ["C'est une actrice espagnol.", "C'est un acteur espagnole.", "C'est une actrice espagnole.", "C'est un actrice espagnol."],
+                answer: "C'est une actrice espagnole."
             },
             {
                 question: "Cada mañana, antes de ir al colegio, te pones el uniforme. ¿Cuál es la forma correcta de decir 'Yo me visto' en francés?",
-                options: [
-                    { text: "Je habille", correct: false },
-                    { text: "Tu t'habilles", correct: false },
-                    { text: "Je m'habille", correct: true },
-                    { text: "Il s'habille", correct: false }
-                ]
+                options: ["Je habille", "Tu t'habilles", "Je m'habille", "Il s'habille"],
+                answer: "Je m'habille"
             },
             {
                 question: "Recibes esta invitación: 'Je t'invite à ma fête samedi à 19h. Thème: Super-héros. Adresse: 5, rue de la Liberté'. ¿Qué información NO aparece en la invitación?",
-                options: [
-                    { text: "La fecha y hora de la fiesta.", correct: false },
-                    { text: "El tema de la fiesta.", correct: false },
-                    { text: "Qué hay que llevar de regalo.", correct: true },
-                    { text: "La dirección del evento.", correct: false }
-                ]
+                options: ["La fecha y hora de la fiesta.", "El tema de la fiesta.", "Qué hay que llevar de regalo.", "La dirección del evento."],
+                answer: "Qué hay que llevar de regalo."
             },
             {
                 question: "En la clase de música, tu compañero toca el violín y en la clase de deportes, juega al rugby. ¿Cuál de estas frases describe correctamente sus actividades?",
-                options: [
-                    { text: "Il joue au violon et il joue du rugby.", correct: false },
-                    { text: "Il joue du violon et il joue au rugby.", correct: true },
-                    { text: "Il joue de violon et il joue de rugby.", correct: false },
-                    { text: "Il joue à violon et il joue à rugby.", correct: false }
-                ]
+                options: ["Il joue au violon et il joue du rugby.", "Il joue du violon et il joue au rugby.", "Il joue de violon et il joue de rugby.", "Il joue à violon et il joue à rugby."],
+                answer: "Il joue du violon et il joue au rugby."
             },
             {
                 question: "La profesora pregunta: '¿Quién quiere participar en el taller de teatro?'. Si tú quieres participar, ¿cuál es la forma más enfática de responder usando un pronombre tónico?",
-                options: [
-                    { text: "Je, je veux participer.", correct: false },
-                    { text: "Toi, tu veux participer.", correct: false },
-                    { text: "Moi, je veux participer.", correct: true },
-                    { text: "Lui, il veut participer.", correct: false }
-                ]
+                options: ["Je, je veux participer.", "Toi, tu veux participer.", "Moi, je veux participer.", "Lui, il veut participer."],
+                answer: "Moi, je veux participer."
             },
             {
                 question: "En una tienda de antigüedades ves una mesa muy bonita pero que tiene muchos años. Si 'mesa' es 'une table' (femenino), ¿cómo la describirías con el adjetivo 'vieux'?",
-                options: [
-                    { text: "C'est une vieux table.", correct: false },
-                    { text: "C'est une vieille table.", correct: true },
-                    { text: "C'est un vieil table.", correct: false },
-                    { text: "C'est une vieil table.", correct: false }
-                ]
+                options: ["C'est une vieux table.", "C'est une vieille table.", "C'est un vieil table.", "C'est une vieil table."],
+                answer: "C'est une vieille table."
             },
             {
                 question: "Según el texto 'L'Afrique, c'est chic!', ¿qué es un 'boubou'?",
-                options: [
-                    { text: "Un tipo de tela muy colorida.", correct: false },
-                    { text: "Una larga túnica tradicional que visten los hombres.", correct: true },
-                    { text: "Un accesorio con flecos para bolsos y zapatos.", correct: false },
-                    { text: "Un festival internacional de moda en Níger.", correct: false }
-                ]
+                options: ["Un tipo de tela muy colorida.", "Una larga túnica tradicional que visten los hombres.", "Un accesorio con flecos para bolsos y zapatos.", "Un festival internacional de moda en Níger."],
+                answer: "Una larga túnica tradicional que visten los hombres."
             },
             {
                 question: "En el Tour de France, ¿qué significa llevar el 'maillot jaune' (maillot amarillo)?",
-                options: [
-                    { text: "Que eres el ciclista más joven de la competición.", correct: false },
-                    { text: "Que has ganado la etapa de montaña.", correct: false },
-                    { text: "Que eres el líder de la clasificación general, el más rápido.", correct: true },
-                    { text: "Que vienes del país donde se celebra la carrera.", correct: false }
-                ]
+                options: ["Que eres el ciclista más joven de la competición.", "Que has ganado la etapa de montaña.", "Que eres el líder de la clasificación general, el más rápido.", "Que vienes del país donde se celebra la carrera."],
+                answer: "Que eres el líder de la clasificación general, el más rápido."
             }
         ];
 
         // DOM Elements
+        const container = document.getElementById('container');
+        const nameContainer = document.getElementById('name-container');
+        const nameForm = document.getElementById('name-form');
+        const studentNameInput = document.getElementById('student-name');
+        const quizContainer = document.getElementById('quiz-container');
         const questionArea = document.getElementById('question-area');
         const questionCounter = document.getElementById('question-counter');
         const scoreCounter = document.getElementById('score-counter');
         const questionText = document.getElementById('question-text');
         const optionsContainer = document.getElementById('options-container');
         const resultsContainer = document.getElementById('results-container');
+        const submissionFeedback = document.getElementById('submission-feedback');
+        const loaderContainer = document.getElementById('loader-container');
         const resultsText = document.getElementById('results-text');
         const resultsFeedback = document.getElementById('results-feedback');
         const restartButton = document.getElementById('restart-button');
-        const shareButton = document.getElementById('share-button');
-
+        
         let currentQuestionIndex = 0;
         let score = 0;
+        let studentName = '';
+        let studentAnswers = [];
+
+        nameForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            studentName = studentNameInput.value.trim();
+            if (studentName) {
+                nameContainer.classList.add('hidden');
+                quizContainer.classList.remove('hidden');
+                startQuiz();
+            }
+        });
 
         function startQuiz() {
             currentQuestionIndex = 0;
             score = 0;
+            studentAnswers = [];
+            quizContainer.classList.remove('hidden');
             resultsContainer.classList.add('hidden');
-            questionArea.classList.remove('hidden');
-            optionsContainer.classList.remove('hidden');
             optionsContainer.style.pointerEvents = 'auto';
             showQuestion();
         }
@@ -196,13 +174,10 @@ Prueba diagnóstica de fránces
             scoreCounter.innerText = `Aciertos: ${score}`;
             questionText.innerText = currentQuestion.question;
 
-            currentQuestion.options.forEach(option => {
+            currentQuestion.options.forEach(optionText => {
                 const button = document.createElement('button');
-                button.innerText = option.text;
+                button.innerText = optionText;
                 button.classList.add('quiz-option', 'w-full', 'bg-white', 'border-2', 'border-gray-300', 'text-gray-700', 'font-semibold', 'p-4', 'rounded-lg', 'text-left', 'hover:bg-indigo-50', 'hover:border-indigo-400');
-                if (option.correct) {
-                    button.dataset.correct = true;
-                }
                 button.addEventListener('click', selectAnswer);
                 optionsContainer.appendChild(button);
             });
@@ -216,21 +191,23 @@ Prueba diagnóstica de fránces
 
         function selectAnswer(e) {
             const selectedButton = e.target;
-            const correct = selectedButton.dataset.correct === 'true';
+            const selectedAnswer = selectedButton.innerText;
+            const correctAnswer = quizData[currentQuestionIndex].answer;
+            
+            studentAnswers.push(selectedAnswer);
 
-            if (correct) {
+            if (selectedAnswer === correctAnswer) {
                 score++;
                 selectedButton.classList.add('correct');
             } else {
                 selectedButton.classList.add('incorrect');
             }
             
-            // Show the correct answer
             Array.from(optionsContainer.children).forEach(button => {
-                if (button.dataset.correct) {
+                if (button.innerText === correctAnswer) {
                     button.classList.add('correct');
                 }
-                button.disabled = true; // Disable all buttons
+                button.disabled = true;
             });
             
             optionsContainer.style.pointerEvents = 'none';
@@ -247,34 +224,63 @@ Prueba diagnóstica de fránces
         }
 
         function showResults() {
-            questionArea.classList.add('hidden');
-            optionsContainer.classList.add('hidden');
+            quizContainer.classList.add('hidden');
             resultsContainer.classList.remove('hidden');
+            submissionFeedback.classList.add('hidden');
+            loaderContainer.classList.remove('hidden');
+            
+            submitResultsToSheet();
+        }
 
-            resultsText.innerText = `Tu resultado final es ${score} de ${quizData.length} aciertos.`;
+        function submitResultsToSheet() {
+            const formData = new FormData();
+            formData.append('nombre', studentName);
+            formData.append('puntaje', `${score} / ${quizData.length}`);
+            studentAnswers.forEach((answer, index) => {
+                formData.append(`respuesta${index + 1}`, answer);
+            });
+            
+            fetch(SCRIPT_URL, { method: 'POST', body: formData })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    displayFinalMessage(true);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    displayFinalMessage(false);
+                });
+        }
+        
+        function displayFinalMessage(success) {
+            loaderContainer.classList.add('hidden');
+            submissionFeedback.classList.remove('hidden');
+
+            resultsText.innerText = `${studentName}, tu resultado final es ${score} de ${quizData.length} aciertos.`;
             
             let feedback = '';
             const percentage = (score / quizData.length) * 100;
-            if (percentage >= 80) {
-                feedback = '¡Excelente trabajo! Tienes un gran dominio.';
-            } else if (percentage >= 50) {
-                feedback = '¡Buen trabajo! Sigue repasando para mejorar.';
-            } else {
-                feedback = 'No te preocupes. ¡Este es un buen punto de partida para repasar!';
-            }
+            if (percentage >= 80) feedback = '¡Excelente trabajo! Tienes un gran dominio.';
+            else if (percentage >= 50) feedback = '¡Buen trabajo! Sigue repasando para mejorar.';
+            else feedback = 'No te preocupes. ¡Este es un buen punto de partida para repasar!';
             resultsFeedback.innerText = feedback;
+
+            if (!success) {
+                const errorMsg = document.createElement('p');
+                errorMsg.innerText = "Hubo un error al enviar tus resultados. Por favor, toma una captura de pantalla.";
+                errorMsg.classList.add('text-red-500', 'font-semibold', 'mt-4');
+                submissionFeedback.appendChild(errorMsg);
+            }
         }
 
-        restartButton.addEventListener('click', startQuiz);
-
-        shareButton.addEventListener('click', () => {
-            const message = encodeURIComponent(`¡Terminé la prueba diagnóstica de francés! Mi resultado fue ${score} de ${quizData.length}.`);
-            const whatsappUrl = `https://wa.me/?text=${message}`;
-            window.open(whatsappUrl, '_blank');
+        restartButton.addEventListener('click', () => {
+             nameContainer.classList.remove('hidden');
+             quizContainer.classList.add('hidden');
+             resultsContainer.classList.add('hidden');
+             studentNameInput.value = '';
         });
-
-        // Start the quiz on page load
-        startQuiz();
     </script>
 </body>
 </html>
+
+
